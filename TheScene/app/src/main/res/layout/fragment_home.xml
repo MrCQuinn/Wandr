@@ -1,0 +1,82 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.charliequinn.thescene.Fragments.HomeFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/search_bar"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:hint="Search"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
+            android:background="@color/colorSearchBarGrey"
+            android:gravity="center"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+            <Button
+                android:id="@+id/home_unfiltered"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="9dp"
+                android:padding="10dp"
+                android:background="@drawable/round_button"
+                android:textColor="@android:color/white"
+                style="?android:attr/borderlessButtonStyle"
+                android:text="@string/all_caps"/>
+            <Button
+                android:id="@+id/friends"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_marginLeft="9dp"
+                android:layout_marginRight="9dp"
+                android:background="@android:color/transparent"
+                style="?android:attr/borderlessButtonStyle"
+                android:padding="10dp"
+                android:text="@string/friends"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_marginLeft="9dp"
+                android:layout_marginRight="20dp"
+                android:padding="10dp"
+                android:text="@string/promoters"
+                android:id="@+id/promoters"
+                style="?android:attr/borderlessButtonStyle"
+                android:background="@android:color/transparent"/>
+
+        </LinearLayout>
+
+
+        <ListView
+            android:id="@+id/statuses"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_below="@+id/title"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="10dp">
+        </ListView>
+
+
+    </LinearLayout>
+
+
+</FrameLayout>

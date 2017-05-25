@@ -1,0 +1,118 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.example.charliequinn.thescene.Fragments.ProfileFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@color/colorPrimary">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/usernameDisplay"
+                    android:layout_gravity="center_horizontal"
+                    android:text="@string/app_name"/>
+
+
+            </LinearLayout>
+
+
+            <FrameLayout
+                android:id="@+id/frame"
+                android:layout_width="160dp"
+                android:layout_height="160dp"
+                android:layout_gravity="center_horizontal">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <ImageButton
+                        android:layout_height="match_parent"
+                        android:layout_width="match_parent"
+                        android:id="@+id/profilepic"
+                        android:src="@drawable/missing_propic"
+                        android:layout_centerHorizontal="true">
+                    </ImageButton>
+
+                    <ImageView
+                        android:id="@+id/circle_crop"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/circlecrop" />
+
+                    <ProgressBar
+                        android:id="@+id/progressBarProfile"
+                        android:minHeight="50dp"
+                        android:maxHeight="50dp"
+                        android:layout_marginTop="60dp"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        style="?android:attr/progressBarStyleLarge"/>
+
+                </RelativeLayout>
+            </FrameLayout>
+
+            <Button
+                android:id="@+id/add_friend_button"
+                android:onClick="addFriend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="+ add friend"
+                android:layout_margin="10dp"
+                android:background="@drawable/add_friend_button"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@android:color/black">
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="friends"
+                android:textColor="@android:color/white"
+                android:background="@android:color/transparent"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/promoters"
+                android:textColor="@android:color/white"
+                android:background="@android:color/transparent"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="checkins"
+                android:textColor="@android:color/white"
+                android:background="@android:color/transparent"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="badges"
+                android:textColor="@android:color/white"
+                android:background="@android:color/transparent"/>
+        </LinearLayout>
+        <ListView
+            android:id="@+id/my_status"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="10dp">
+        </ListView>
+    </LinearLayout>
+
+</FrameLayout>

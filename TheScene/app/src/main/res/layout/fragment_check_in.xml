@@ -1,0 +1,85 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.charliequinn.thescene.Fragments.CheckInFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <!--<EditText-->
+            <!--android:id="@+id/search_bar"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="30dp"-->
+            <!--android:hint="Search"-->
+            <!--android:layout_marginLeft="20dp"-->
+            <!--android:layout_marginRight="20dp"-->
+            <!--android:layout_marginBottom="20dp"-->
+            <!--android:layout_marginTop="20dp"-->
+            <!--android:background="@color/colorSearchBarGrey"-->
+            <!--android:gravity="center"/>-->
+
+        <!--<fragment-->
+            <!--android:id="@+id/place_autocomplete_fragment2"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"-->
+        <!--/>-->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:orientation="horizontal"
+            >
+            <Button
+                android:id="@+id/near_me"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:padding="10dp"
+                android:background="@drawable/round_button"
+                android:textColor="@android:color/white"
+                android:text="@string/near_me"
+                />
+            <Button
+                android:id="@+id/recent"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:padding="10dp"
+                android:text="@string/recent"
+                android:background="@android:color/transparent"
+                style="?android:attr/borderlessButtonStyle"/>
+
+            <Button
+                android:id="@+id/favorites"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_marginLeft="10dp"
+                android:padding="10dp"
+                android:text="@string/favorites"
+                android:background="@android:color/transparent"
+                style="?android:attr/borderlessButtonStyle"/>
+
+        </LinearLayout>
+
+
+        <ListView
+            android:id="@+id/places"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="10dp">
+        </ListView>
+
+
+
+    </LinearLayout>
+
+
+</FrameLayout>

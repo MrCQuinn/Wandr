@@ -1,0 +1,48 @@
+<resources>
+    <string name="app_name">Wandr</string>
+
+    <string name="login_button">Log In</string>
+    <string name="login_w_fb_button">Log In With Facebook</string>
+    <string name="create_account">Create Account</string>
+
+    <string name="username_hint">Username</string>
+    <string name="email_hint">Email</string>
+    <string name="pw_hint">Password</string>
+    <string name="confirm_pw_hint">Confirm Password</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment1">Hello blank fragment 1</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_main">Wandr</string>
+
+
+    <string name="status_default"><b>Tom Anderson</b> checked in somewhere and did some shit</string>
+
+    <string name="google_maps_key">AIzaSyAZq9nEBpZHm1m5oFMqGHfmrQR3_QIStWQ</string>
+
+    <string name="all_caps"><b>ALL</b></string>
+    <string name="friends"><b>FRIENDS</b></string>
+    <string name="promoters"><b>Promoters</b></string>
+
+    <string name="near_me"><b>NEAR ME</b></string>
+    <string name="recent"><b>RECENT</b></string>
+    <string name="favorites"><b>FAVORITES</b></string>
+
+    <string name="place_default"><b>Default Place Name</b></string>
+    <string name="distance_default"><b>Distance default</b></string>
+
+    <string name="rating_default">3/5</string>
+    <string name="address_default">106 South Meridian\nEnterprise, AL 36330</string>
+    <string name="open_til_default"><b>open til</b></string>
+    <string name="checked_in_default"> checked in</string>
+
+
+    <string name="all"><b>All</b></string>
+    <string name="restaurants"><b>Restaurants</b></string>
+    <string name="bars"><b>Bars</b></string>
+    <string name="shopping"><b>Shopping</b></string>
+
+
+</resources>
