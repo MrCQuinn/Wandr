@@ -66,14 +66,29 @@
         </LinearLayout>
 
 
-        <ListView
-            android:id="@+id/statuses"
-            android:layout_height="wrap_content"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_below="@+id/title"
-            android:divider="@android:color/transparent"
-            android:dividerHeight="10dp">
-        </ListView>
+            android:layout_height="wrap_content"
+            android:gravity="center">
+            <ListView
+                android:id="@+id/statuses"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_below="@+id/title"
+                android:divider="@android:color/transparent"
+                android:dividerHeight="10dp">
+
+            </ListView>
+            <ProgressBar
+                android:id="@+id/homeProgress"
+                android:minHeight="50dp"
+                android:maxHeight="50dp"
+                android:layout_marginTop="60dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                style="?android:attr/progressBarStyleLarge"/>
+        </RelativeLayout>
+
 
 
     </LinearLayout>

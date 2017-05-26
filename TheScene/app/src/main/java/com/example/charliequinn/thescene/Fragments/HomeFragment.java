@@ -3,12 +3,15 @@ package com.example.charliequinn.thescene.Fragments;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,11 +19,10 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.ProgressBar;
 
 import com.example.charliequinn.thescene.Activities.MainActivity;
 import com.example.charliequinn.thescene.Activities.OthersProfile;
-import com.example.charliequinn.thescene.Helpers.Downloader;
 import com.example.charliequinn.thescene.Helpers.Uploader;
 import com.example.charliequinn.thescene.R;
 import com.example.charliequinn.thescene.Adapters.StatusAdapter;
@@ -30,7 +32,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 /**
@@ -50,6 +54,7 @@ public class HomeFragment extends Fragment {
     public final static String USER_IDX = "com.example.charliequinn.thescene.USERIDX";
     public final static String OTHER_IDX = "com.example.charliequinn.thescene.OTHERIDX";
     public final static String FRIEND_LIST = "com.example.charliequinn.thescene.FRIENDLIST";
+    public final static String OTHER_PROFILE_PIC = "com.example.charliequinn.thescene.OTHER_PROFILE_PIC";
 
 
     // TODO: Rename and change types of parameters
@@ -63,6 +68,9 @@ public class HomeFragment extends Fragment {
     private StatusAdapter adapter;
     private int userIDX;
     private int[] friendIDs;
+    private ArrayList<StatusItem> statuses;
+    private HashMap<Integer, Bitmap> photos;
+    private ProgressBar progress;
 
     Button[] buttons = new Button[3];
 
@@ -96,6 +104,8 @@ public class HomeFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
+        statuses = new ArrayList<>();
+        photos = new HashMap<>();
     }
 
     @Override
@@ -103,17 +113,22 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         myFragmentView = inflater.inflate(R.layout.fragment_home, container, false);
-        listView = (ListView) myFragmentView.findViewById(R.id.statuses);
 
+        //initalize progressbar and hide it until loading begins
+        progress = (ProgressBar) myFragmentView.findViewById(R.id.homeProgress);
+        progress.setVisibility(View.GONE);
+
+        //initialize status list
+        listView = (ListView) myFragmentView.findViewById(R.id.statuses);
 
         //get user info
         MainActivity ma = (MainActivity) getActivity();
         userIDX = ma.getUserIDX();
 
-        new downloadFriendIDs().execute(userIDX+"");
+        //download statuses
+        new downloadStatuses().execute(userIDX+"", "all");
 
-        createAdapter("all");
-
+        //set up buttons
         buttons[0] = (Button) myFragmentView.findViewById(R.id.home_unfiltered);
         buttons[1] = (Button) myFragmentView.findViewById(R.id.friends);
         buttons[2] = (Button) myFragmentView.findViewById(R.id.promoters);
@@ -122,7 +137,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 switchFocus(0);
-                createAdapter("all");
+                new downloadStatuses().execute(userIDX+"", "all");
             }
         });
 
@@ -130,7 +145,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 switchFocus(1);
-                createAdapter("friends");
+                new downloadStatuses().execute(userIDX+"", "friends");
             }
         });
 
@@ -139,7 +154,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 switchFocus(2);
-                createAdapter("promoters");
+                new downloadStatuses().execute(userIDX+"", "promoters");
             }
         });
 
@@ -207,25 +222,32 @@ public class HomeFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    public void goToProfile(int otherIDX){
+    public void goToProfile(int otherIDX, Bitmap bm){
         Intent intent = new Intent(this.getActivity(), OthersProfile.class);
         intent.putExtra(USER_IDX, userIDX);
         intent.putExtra(OTHER_IDX,otherIDX);
         intent.putExtra(FRIEND_LIST,friendIDs);
+//        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//        bm.compress(Bitmap.CompressFormat.PNG, 100, stream);
+//        byte[] byteArray = stream.toByteArray();
+//        intent.putExtra(OTHER_PROFILE_PIC,byteArray);
         startActivity(intent);
     }
 
-    public void createAdapter(String filter){
-        final StatusAdapter adapter = new StatusAdapter(getActivity(),new ArrayList<StatusItem>());
-        this.adapter = adapter;
-        new downloadStatuses().execute(userIDX+"", filter);
-    }
-
-    public void createAdapterForReal(JSONArray jsonArray) throws JSONException {
+    public void createStatusList(JSONArray jsonArray) throws JSONException {
         JSONObject job;
+        statuses.clear();
         for(int i = jsonArray.length()-1; i >= 0; i--){
             job = jsonArray.getJSONObject(i);
-            adapter.add(new StatusItem(job.getString("username"), job.getString("placename"), job.getInt("useridx")));
+            statuses.add(new StatusItem(job.getString("username"), job.getString("placename"), job.getInt("useridx")));
+        }
+    }
+
+    public void createAdapter() throws JSONException {
+        final StatusAdapter adapter = new StatusAdapter(getActivity(),new ArrayList<StatusItem>(),photos);
+        //this.adapter = adapter;
+        for(int i = statuses.size()-1; i >= 0; i--){
+            adapter.add(statuses.get(i));
         }
         createListView(adapter);
     }
@@ -233,6 +255,7 @@ public class HomeFragment extends Fragment {
     public void createListView(final StatusAdapter adapter){
         if(listView!=null){
             listView.setAdapter(adapter);
+            progress.setVisibility(View.GONE);
         }else{
             Log.i("ay","shit");
         }
@@ -245,30 +268,22 @@ public class HomeFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.i("HomeFragment", "status clicked");
                 StatusItem pick = adapter.getItem(position);
-                goToProfile(pick.userIDX);
+                goToProfile(pick.userIDX,pick.profliePic);
             }
         });
 
 
     }
 
-    private void setFriendIDs(JSONArray jarray){
-        friendIDs = new int[jarray.length()];
-
-        try{
-            for(int i = 0; i < jarray.length(); i++){
-                friendIDs[i] = jarray.getJSONObject(i).getInt("friendidx");
-            }
-        }catch (Exception e){
-            Log.e("downloadFriends",e.toString());
-        }
+    public void setFriendIDs(int[] friendIDs){
+        this.friendIDs = friendIDs;
     }
 
     private class downloadStatuses extends AsyncTask<String, Void, String> {
         @Override
         protected void onPreExecute(){
             Log.i("downloadStatuses","beginning status download");
-            //progress.setVisibility(View.VISIBLE);
+            progress.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -285,7 +300,13 @@ public class HomeFragment extends Fragment {
             }else{
                 try{
                     JSONArray jarray = new JSONArray(serverReply);
-                    createAdapterForReal(jarray);
+                    if(jarray.length()>0){
+                        new downloadPhotos().execute(jarray);
+                    }else{
+                        statuses.clear();
+                        createAdapter();
+                    }
+
                 }catch (Exception e){
                     Log.e("downloadStatus", "Server error: "+serverReply+", "+e.toString() );
                 }
@@ -294,30 +315,59 @@ public class HomeFragment extends Fragment {
 
     }
 
-    private class downloadFriendIDs extends AsyncTask<String, Void, String> {
+    private class downloadPhotos extends AsyncTask<JSONArray, Void, String> {
         @Override
-        protected void onPreExecute(){
-            Log.i("downloadFriendIDs","beginning friend ids download");
-            //progress.setVisibility(View.VISIBLE);
+        protected void onPreExecute() {
+            Log.i("getPhotos", "beginning photo download");
+            progress.setVisibility(View.VISIBLE);
         }
 
         @Override
-        protected  String doInBackground(String... strings){
-            String[] param = {"getFriendIDs","POST"};
-            String[] keys = {"useridx"};
-            return Uploader.getInstance().genericUpload(param,keys,strings);
+        protected String doInBackground(JSONArray... jarrays) {
+            JSONArray jarray = jarrays[0];
+            String query = "select idx, profilepic from users where idx = ";
+            JSONObject job;
+            try {
+                createStatusList(jarray);
+                for (int i = jarray.length() - 1; i > 0; i--) {
+                    job = jarray.getJSONObject(i);
+                    query = query + job.getInt("useridx") + " or idx = ";
+                }
+                job = jarray.getJSONObject(0);
+                query = query + job.getInt("useridx");
+                Log.i("getPhotos", "query = " + query);
+            } catch (Exception e) {
+                Log.e("getPhotos", e.toString());
+            }
+
+            String[] param = {"getPhotos", "POST"};
+            String[] keys = {"query"};
+            String[] values = {query};
+            return Uploader.getInstance().genericUpload(param, keys, values);
         }
+
         @Override
-        protected void onPostExecute(String serverReply){
+        protected void onPostExecute(String serverReply) {
             //progress.setVisibility(View.GONE);
-            if(serverReply.equals("error response")){
-                Log.i("downloadFriendIDs","Something messed up");
-            }else{
-                try{
+            if (serverReply.equals("error response")) {
+                Log.i("getPhotos", "Something messed up");
+            } else {
+                try {
                     JSONArray jarray = new JSONArray(serverReply);
-                    setFriendIDs(jarray);
-                }catch (Exception e){
-                    Log.e("downloadFriendIDs", "Server error: "+serverReply+", "+e.toString() );
+                    JSONObject job;
+                    for (int i = 0; i < jarray.length(); i++) {
+                        job = jarray.getJSONObject(i);
+                        String picString = job.getString("profilepic");
+                        if (picString.length() > 6) {
+                            byte barray[] = Base64.decode(picString, 4);
+                            photos.put(job.getInt("idx"), BitmapFactory.decodeByteArray(barray, 0, barray.length));
+                        }
+                    }
+                    photos.put(-1, BitmapFactory.decodeResource(getResources(), R.drawable.missing_profile_pic));
+                    createAdapter();
+                } catch (Exception e) {
+                    Log.e("getPhotos", "Server reply: " + serverReply);
+                    Log.e("getPhotos", "Server error: " + e.toString());
                 }
             }
         }

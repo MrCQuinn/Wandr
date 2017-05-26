@@ -21,6 +21,8 @@ public class Credentials extends AppCompatActivity {
     private String usernameStr;
     public final static String USER_IDX_KEY = "idx";
     public final static String USER_NAME_KEY = "username";
+    public final static String PROFILE_PIC_KEY = "username";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +95,9 @@ public class Credentials extends AppCompatActivity {
                     //TODO save authentication token
                     signIn(idx);
                 }catch (Exception e){
-                    Log.e("isUser", "Server error: "+serverReply+", "+e.toString() );
+                    Log.e("isUser", "Server error: "+serverReply);
+                    Log.e("isUser", e.toString() );
+
                 }
             }
         }

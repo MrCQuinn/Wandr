@@ -1,26 +1,33 @@
 package com.example.charliequinn.thescene.Adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.media.Image;
 import android.text.Html;
 import android.text.Spanned;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.charliequinn.thescene.ListItems.StatusItem;
 import com.example.charliequinn.thescene.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by charliequinn on 1/16/17.
  */
 
 public class StatusAdapter extends ArrayAdapter<StatusItem> {
-    public StatusAdapter(Context context, ArrayList<StatusItem> statuses) {
+    private HashMap<Integer, Bitmap> photos;
+    public StatusAdapter(Context context, ArrayList<StatusItem> statuses, HashMap<Integer, Bitmap> photos) {
         super(context, 0, statuses);
+        this.photos = photos;
     }
 
     public View getView(int position, View convertView, ViewGroup parent){
@@ -34,6 +41,22 @@ public class StatusAdapter extends ArrayAdapter<StatusItem> {
         TextView status = (TextView) convertView.findViewById(R.id.status);
         Spanned statusString = Html.fromHtml("<b>"+item.name + "</b> Checked in to <b><font color='blue'>" + item.status+"</b></font>");
         status.setText(statusString);
+
+        if(photos.get(item.userIDX)==null){
+            Log.i("StatusAdapter", "id "+item.userIDX+" missing picture");
+        }
+
+
+        ImageButton profilePicture = (ImageButton) convertView.findViewById(R.id.statusPicture);
+
+        if(photos.get(item.userIDX)==null){
+            item.setPhoto(photos.get(-1));
+            profilePicture.setImageBitmap(photos.get(-1));
+        }else{
+            item.setPhoto(photos.get(item.userIDX));
+            profilePicture.setImageBitmap(photos.get(item.userIDX));
+        }
+
 
 
 

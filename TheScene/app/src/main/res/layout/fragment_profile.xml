@@ -24,6 +24,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/usernameDisplay"
+                    android:textSize="24dp"
+                    android:textColor="#ffffff"
                     android:layout_gravity="center_horizontal"
                     android:text="@string/app_name"/>
 
@@ -82,27 +84,31 @@
             android:orientation="horizontal"
             android:background="@android:color/black">
             <Button
+                android:id="@+id/friendsDisplay"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:text="friends"
+                android:text="friends\n"
                 android:textColor="@android:color/white"
                 android:background="@android:color/transparent"/>
             <Button
+                android:id="@+id/promotersDisplay"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="@string/promoters"
                 android:textColor="@android:color/white"
                 android:background="@android:color/transparent"/>
             <Button
+                android:id="@+id/checkinsDisplay"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:text="checkins"
+                android:text="checkins\n0"
                 android:textColor="@android:color/white"
                 android:background="@android:color/transparent"/>
             <Button
+                android:id="@+id/badgesDisplay"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:text="badges"
+                android:text="badges\n0"
                 android:textColor="@android:color/white"
                 android:background="@android:color/transparent"/>
         </LinearLayout>

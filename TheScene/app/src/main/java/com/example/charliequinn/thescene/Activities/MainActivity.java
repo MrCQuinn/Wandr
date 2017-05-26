@@ -8,8 +8,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -29,6 +31,7 @@ import com.example.charliequinn.thescene.Fragments.CheckInFragment;
 import com.example.charliequinn.thescene.Fragments.HomeFragment;
 import com.example.charliequinn.thescene.Fragments.MapFragment;
 import com.example.charliequinn.thescene.Fragments.ProfileFragment;
+import com.example.charliequinn.thescene.Helpers.Uploader;
 import com.example.charliequinn.thescene.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -48,6 +51,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONArray;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements
     private ViewPager viewPager;
     int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
 
+    HomeFragment homeReference;
     MapFragment mapReference;
     CheckInFragment checkinReference;
     ProfileFragment profileReference;
@@ -70,8 +76,11 @@ public class MainActivity extends AppCompatActivity implements
     LocationRequest mLocationRequest;
 
     private GoogleApiClient mGoogleApiClient;
+    private int[] friendIDs;
 
     int userIDX;
+    String username;
+    String profilePic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +103,10 @@ public class MainActivity extends AppCompatActivity implements
 
         Intent intent = getIntent();
         userIDX = intent.getIntExtra(Credentials.USER_IDX_KEY, -1);
+        username = intent.getStringExtra(Credentials.USER_NAME_KEY);
+        profilePic = intent.getStringExtra(Credentials.PROFILE_PIC_KEY);
+
+        new downloadFriendIDs().execute(userIDX+"");
 
 
 //        Places.GeoDataApi.getPlaceById(mGoogleApiClient, placeId)
@@ -115,6 +128,10 @@ public class MainActivity extends AppCompatActivity implements
 
     public int getUserIDX(){
         return userIDX;
+    }
+
+    public int[] getFriendIDs(){
+        return friendIDs;
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -167,7 +184,8 @@ public class MainActivity extends AppCompatActivity implements
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new HomeFragment(), "Home");
+        homeReference = new HomeFragment();
+        adapter.addFragment(homeReference, "Home");
         mapReference = new MapFragment();
         adapter.addFragment(mapReference, "Map");
         checkinReference = new CheckInFragment();
@@ -188,6 +206,21 @@ public class MainActivity extends AppCompatActivity implements
         } catch (GooglePlayServicesNotAvailableException e) {
             // TODO: Handle the error.
         }
+    }
+
+    private void setFriendIDs(JSONArray jarray){
+        friendIDs = new int[jarray.length()];
+
+        try{
+            for(int i = 0; i < jarray.length(); i++){
+                friendIDs[i] = jarray.getJSONObject(i).getInt("friendidx");
+            }
+        }catch (Exception e){
+            Log.e("downloadFriends",e.toString());
+        }
+
+        homeReference.setFriendIDs(friendIDs);
+        profileReference.setFriendIDs(friendIDs);
     }
 
     // A place has been received; use requestCode to track the request.
@@ -211,9 +244,6 @@ public class MainActivity extends AppCompatActivity implements
 
         }
     }
-
-
-
 
     class ViewPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
@@ -242,6 +272,36 @@ public class MainActivity extends AppCompatActivity implements
         public CharSequence getPageTitle(int position) {
             return mFragmentTitleList.get(position);
         }
+    }
+
+    private class downloadFriendIDs extends AsyncTask<String, Void, String> {
+        @Override
+        protected void onPreExecute(){
+            Log.i("downloadFriendIDs","beginning friend ids download");
+            //progress.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected  String doInBackground(String... strings){
+            String[] param = {"getFriendIDs","POST"};
+            String[] keys = {"useridx"};
+            return Uploader.getInstance().genericUpload(param,keys,strings);
+        }
+        @Override
+        protected void onPostExecute(String serverReply){
+            //progress.setVisibility(View.GONE);
+            if(serverReply.equals("error response")){
+                Log.i("downloadFriendIDs","Something messed up");
+            }else{
+                try{
+                    JSONArray jarray = new JSONArray(serverReply);
+                    setFriendIDs(jarray);
+                }catch (Exception e){
+                    Log.e("downloadFriendIDs", "Server error: "+serverReply+", "+e.toString() );
+                }
+            }
+        }
+
     }
 
 

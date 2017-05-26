@@ -48,6 +48,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -80,8 +81,13 @@ public class ProfileFragment extends Fragment {
     private Button addFriend;
     private ImageButton changeProfilePic;
     private TextView usernameTV;
+    private Button friendCount;
+    private Button checkinCount;
+    private Button promoterCount;
     private ProgressBar progress;
-
+    private Bitmap photo;
+    private int[] friendIDs;
+    private int checkins;
 
     String mCurrentPhotoPath;
 
@@ -127,7 +133,9 @@ public class ProfileFragment extends Fragment {
         progress = (ProgressBar) myFragmentView.findViewById(R.id.progressBarProfile);
         progress.setVisibility(View.GONE);
         usernameTV = (TextView) myFragmentView.findViewById(R.id.usernameDisplay);
-
+        friendCount = (Button) myFragmentView.findViewById(R.id.friendsDisplay);
+        promoterCount = (Button) myFragmentView.findViewById(R.id.promotersDisplay);
+        checkinCount = (Button) myFragmentView.findViewById(R.id.checkinsDisplay);
 
         changeProfilePic = (ImageButton) myFragmentView.findViewById(R.id.profilepic);
 
@@ -144,8 +152,14 @@ public class ProfileFragment extends Fragment {
         MainActivity ma = (MainActivity) getActivity();
         userIDX = ma.getUserIDX();
 
+
+
         new DownloadProfileInfo().execute(userIDX+"");
 
+
+
+        friendCount.setText("FRIENDS\n"+friendIDs.length);
+        promoterCount.setText("PROMOTERS\n"+0);
 
 
         // Inflate the layout for this fragment
@@ -200,17 +214,7 @@ public class ProfileFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //super.onActivityResult(requestCode, resultCode, data);
-        Log.i("profile pic","inside onactivityresult");
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Log.i("profile pic","inside onactivityresult and result ok");
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            changeProfilePic.setImageBitmap(imageBitmap);
-        }
-    }
+
 
     public void changeProfilePicture(){
         int targetW = changeProfilePic.getWidth();
@@ -316,14 +320,18 @@ public class ProfileFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    public void createAdapter(String filter){
-        adapter = new StatusAdapter(getActivity(),new ArrayList<StatusItem>());
+    public void createAdapter(){
+        HashMap<Integer, Bitmap> hm = new HashMap<>();
+        hm.put(userIDX, photo);
+        adapter = new StatusAdapter(getActivity(),new ArrayList<StatusItem>(),hm);
 
-        new downloadStatuses().execute(userIDX+"", filter);
+        new downloadStatuses().execute(userIDX+"", "self");
     }
 
     public void createAdapterForReal(JSONArray jsonArray) throws JSONException {
         JSONObject job;
+//        checkins = jsonArray.length();
+        checkinCount.setText("CHECKINS\n"+jsonArray.length());
         for(int i = jsonArray.length()-1; i >= 0; i--){
             job = jsonArray.getJSONObject(i);
             adapter.add(new StatusItem(job.getString("username"), job.getString("placename"), job.getInt("useridx")));
@@ -337,6 +345,11 @@ public class ProfileFragment extends Fragment {
         } else {
             Log.i("ay", "shit");
         }
+    }
+
+    public void setFriendIDs(int[] friendIDs){
+        Log.i("setFriendIDs","setting friend IDs in profile to "+friendIDs.length);
+        this.friendIDs = friendIDs;
     }
 
     private File createImageFile() throws IOException {
@@ -384,12 +397,13 @@ public class ProfileFragment extends Fragment {
                     if(picString.length() > 6){
                         Log.i("getPicture",picString.length()+ " a "+picString);
                         byte barray[] = Base64.decode(picString,4);
-                        changeProfilePic.setImageBitmap(BitmapFactory.decodeByteArray(barray,0,barray.length));
+                        photo = BitmapFactory.decodeByteArray(barray,0,barray.length);
+                        changeProfilePic.setImageBitmap(photo);
                     }else{
                         Log.i("getPicture","no profile picture");
                     }
 
-                    createAdapter("self");
+                    createAdapter();
 
                 }catch (Exception e){
                     Log.e("downloadStatus", "Server error: "+serverReply+", "+e.toString() );
